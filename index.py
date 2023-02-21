@@ -133,7 +133,16 @@ def modal_demo_signup(nc1, nc2, is_open):
 
 # Callback in the future (with sqlAlchemy)
 
+
+
 # To signup a new user
+@app.callback(
+    Output(),
+    Input("modal-signup-button", "n_clicks"),
+    State("email_signup", "value"),
+    State("first_password_signup", "value"),
+    State()
+)
 
 # To check if the email is already in the database
 
