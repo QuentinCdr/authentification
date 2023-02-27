@@ -1,26 +1,12 @@
-from dash import Dash,html, dcc
+from dash import Dash,html, dcc, Input, Output, State, dash_table, no_update
 from flask import Flask, request, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from index import navbar
+from index import appFlask,app
 
 # Create the Flask extension 
 db = SQLAlchemy()
 #create the app
 
-app = Dash(__name__)
-
-app.layout = html.Div(children=[
-    dcc.Location(id='url', refresh=False),
-    navbar,
-    html.Div(id='page-content'),
-    html.Div(children=False, id='is-mobile', hidden=True),
-])
-
-appFlask = app.server
-
-#configure the SQLite database relative to the app instance folder
-appFlask.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/stagiaire/Documents/Python/quentinvm/project.db'
-#initialize the app with the extension
 db.init_app(appFlask)
 
 class User(db.Model):
@@ -34,12 +20,27 @@ with appFlask.app_context():
     db.create_all()
 
 
-@appFlask.route("/users")
+'''@appFlask.route("/users")
+def user_list():
+    users = db.session.execute(db.select(User).order_by(User.name)).scalars()
+    return render_template("user/list.py", users=users)'''
+
+
+@app.callback(
+    "/users",
+    Output("page-content", "children"),
+    Input("user-list", "n_clicks"),
+)
 def user_list():
     users = db.session.execute(db.select(User).order_by(User.name)).scalars()
     return render_template("user/list.py", users=users)
 
-@appFlask.route("/users/create", methods=["GET", "POST"])
+@app.callback(
+    "/users/create",
+    Output("page-content", "children"),
+    Input("user-create", "n_clicks"),
+    methods=["GET", "POST"],
+)
 def user_create():
     if request.method == "POST":
         user = User(
@@ -52,12 +53,16 @@ def user_create():
 
     return render_template("user/create.py")
 
-@appFlask.route("/user/<int:id>")
+@app.callback(
+    "/user/<int:id>",
+    Output("page-content", "children"),
+    Input("user-detail", "n_clicks"),
+)
 def user_detail(id):
     user = db.get_or_404(User, id)
     return render_template("user/detail.py", user=user)
 
-@appFlask.route("/user/<int:id>/delete", methods=["GET", "POST"])
+@app.callback("/user/<int:id>/delete",methods=["GET", "POST"])
 def user_delete(id):
     user = db.get_or_404(User, id)
 
@@ -67,7 +72,3 @@ def user_delete(id):
         return redirect(url_for("user_list"))
 
     return render_template("user/delete.py", user=user)
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
