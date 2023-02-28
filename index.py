@@ -124,7 +124,12 @@ navbar = dmc.Header(
                 ],
                 position="right",
                 spacing="md"
-            )
+            ),
+        html.Div(
+            id="signup-page",
+            children=False,
+            hidden=True
+        ),   
     ])
 ])
 
@@ -167,7 +172,7 @@ def modal_demo_signup(nc1, nc2, is_open):
     return not is_open
 
 
-'''# To open the signup interface
+# To open the signup interface
 @app.callback(
     Output("signup-page","children"),
     Input("email_signup","value"),
@@ -188,7 +193,7 @@ def sign_me_up(email, pwd1, pwd2, n_clicks):
             id="bad-signup-notify",
             action="show",
             message="Your first password does not match the second. Please try again",
-            icon=DashIconify(icon="feather:info", color="red", width=30),
+            sicon=[DashIconify(icon="feather:info", color="red", width=30)],
         )
     else:
         # enregistre dans la base
@@ -199,10 +204,10 @@ def sign_me_up(email, pwd1, pwd2, n_clicks):
             id="good-signup-notify",
             action="show",
             message="You have been successfully registered",
-            icon=DashIconify(icon="ic:round-celebration"),
+            icon=[DashIconify(icon="ic:round-celebration")],
 
         )
-'''
+
 
 # Callback in the future (with sqlAlchemy)
 
