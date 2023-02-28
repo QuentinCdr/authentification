@@ -27,7 +27,7 @@ def user_list():
 
 
 @app.callback(
-    "/users",
+    #'/users',
     Output("page-content", "children"),
     Input("user-list", "n_clicks"),
 )
@@ -36,7 +36,7 @@ def user_list():
     return render_template("user/list.py", users=users)
 
 @app.callback(
-    "/users/create",
+    #'/users/create',
     Output("page-content", "children"),
     Input("user-create", "n_clicks"),
     methods=["GET", "POST"],
@@ -54,7 +54,7 @@ def user_create():
     return render_template("user/create.py")
 
 @app.callback(
-    "/user/<int:id>",
+    #'/user/<int:id>',
     Output("page-content", "children"),
     Input("user-detail", "n_clicks"),
 )
@@ -62,7 +62,12 @@ def user_detail(id):
     user = db.get_or_404(User, id)
     return render_template("user/detail.py", user=user)
 
-@app.callback("/user/<int:id>/delete",methods=["GET", "POST"])
+@app.callback(
+    #'/user/<int:id>/delete',
+    Output("page-content", "children"),
+    Input("user-delete", "n_clicks"),
+    methods=["GET", "POST"]
+)
 def user_delete(id):
     user = db.get_or_404(User, id)
 
