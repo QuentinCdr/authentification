@@ -126,10 +126,11 @@ navbar = dmc.Header(
                 spacing="md"
             ),
         html.Div(
-            id="signup-page",
-            children=False,
-            hidden=True
-        ),   
+            id="signup-page"
+        ),
+        dmc.NotificationsProvider([
+                # children
+            ])  
     ])
 ])
 
@@ -179,10 +180,11 @@ def modal_demo_signup(nc1, nc2, is_open):
     Input("first_password_signup","value"),
     Input("second_password_signup","value"),
     Input("modal-signup-button","n_clicks"),
-    prevent_initial_call=True,
+    State("modal-simple-button", "opened"),
+    #prevent_initial_call=True,
 
 )
-def sign_me_up(email, pwd1, pwd2, n_clicks):
+def sign_me_up(email, pwd1, pwd2, n_clicks, is_open):
    # if email = text.with(""):
     #    return 
 
@@ -193,7 +195,7 @@ def sign_me_up(email, pwd1, pwd2, n_clicks):
             id="bad-signup-notify",
             action="show",
             message="Your first password does not match the second. Please try again",
-            sicon=[DashIconify(icon="feather:info", color="red", width=30)],
+            icon=[DashIconify(icon="feather:info", color="red", width=30)],
         )
     else:
         # enregistre dans la base
@@ -205,7 +207,6 @@ def sign_me_up(email, pwd1, pwd2, n_clicks):
             action="show",
             message="You have been successfully registered",
             icon=[DashIconify(icon="ic:round-celebration")],
-
         )
 
 
