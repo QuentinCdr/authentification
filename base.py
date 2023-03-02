@@ -1,8 +1,8 @@
 from dash import Dash,html, dcc, Input, Output, State, dash_table, no_update
 from flask import Flask, request, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from index import appFlask,app
-from dash_mantine_components import dmc
+#from index import appFlask,app
+import dash_mantine_components as dmc
 from dash_iconify import DashIconify
 
 # Create the Flask extension 
