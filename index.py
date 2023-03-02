@@ -3,6 +3,12 @@ from dash import Dash,html, dcc, Input, Output, State, dash_table, no_update
 import dash_bootstrap_components as dbc
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
+from dash.exceptions import PreventUpdate
+#from base import db,User
+from flask import Flask, request, render_template, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
+
+
 
 
 
@@ -149,6 +155,20 @@ appFlask = app.server
 appFlask.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/stagiaire/Documents/Python/quentinvm/project.db'
 #initialize the app with the extension
 
+# Create the Flask extension 
+db = SQLAlchemy()
+#create the app
+
+db.init_app(appFlask)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(120), unique=True, nullable=False)
+
+
+
 # To open & close the login modal
 @app.callback(
     Output("modal-simple-login", "opened"),
@@ -176,20 +196,27 @@ def modal_demo_signup(nc1, nc2, is_open):
 # To open the signup interface
 @app.callback(
     Output("signup-page","children"),
+    Input("username_signup","value"),
     Input("email_signup","value"),
     Input("first_password_signup","value"),
     Input("second_password_signup","value"),
     Input("modal-signup-button","n_clicks"),
-    State("modal-simple-button", "opened"),
-    #prevent_initial_call=True,
+    #State("modal-simple-signup", "opened"),
+    prevent_initial_call=True,
 
 )
-def sign_me_up(email, pwd1, pwd2, n_clicks, is_open):
+def sign_me_up(name, email, pwd1, pwd2, n_clicks ):
    # if email = text.with(""):
     #    return 
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+    print(dash.callback_context.triggered)
+    print(changed_id)
+    if changed_id != 'modal-signup-button.n_clicks':
+        raise PreventUpdate
 
     # To check if the password is correct
     if pwd1 != pwd2:
+        
         return dmc.Notification(
             title="Error",
             id="bad-signup-notify",
@@ -199,7 +226,14 @@ def sign_me_up(email, pwd1, pwd2, n_clicks, is_open):
         )
     else:
         # enregistre dans la base
-
+        #if request.method == "POST":
+        user = User(
+            name=request.form["username_signup","value"],
+            email=request.form["email_signup","value"],
+        )
+        db.session.add(user)
+        db.session.commit()
+        print(user)
 
         return dmc.Notification(
             title="Welcome",
@@ -208,7 +242,7 @@ def sign_me_up(email, pwd1, pwd2, n_clicks, is_open):
             message="You have been successfully registered",
             icon=[DashIconify(icon="ic:round-celebration")],
         )
-
+    
 
 # Callback in the future (with sqlAlchemy)
 
