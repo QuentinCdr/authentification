@@ -30,10 +30,10 @@ navbar = dmc.Header(
                         [
                             html.Div(
                                 [
-                                    dbc.Label("Email", html_for="example-email"),
-                                    dbc.Input(type="email", id="example-email", placeholder="Enter your email"),
+                                    dbc.Label("Name", html_for="example-name"),
+                                    dbc.Input(type="name", id="example-name", placeholder="Enter your name"),
                                 ],
-                                id="email_input", className="mb-3"
+                                id="name_input", className="mb-3"
                             ),
 
                             html.Div(
@@ -76,7 +76,7 @@ navbar = dmc.Header(
                             html.Div(
                                 [
                                     dbc.Label("Username"),
-                                    dbc.Input(type="text", id="username_signup", placeholder="Enter your username")
+                                    dbc.Input(type="text", id="username_signup", placeholder="Enter your username", name="username_signup")
                                 ],
                                 id="username-signup-input",
                                 className="mb-3"
@@ -84,7 +84,7 @@ navbar = dmc.Header(
                             html.Div(
                                 [
                                     dbc.Label("Email"),
-                                    dbc.Input(type="email", id="email_signup", placeholder="Enter your email address")
+                                    dbc.Input(type="email", id="email_signup", placeholder="Enter your email address", name="email_signup")
                                 ],
                                 id="email-signup-input",
                                 className="mb-3"
@@ -228,8 +228,9 @@ def sign_me_up(name, email, pwd1, pwd2, n_clicks ):
         # enregistre dans la base
         #if request.method == "POST":
         user = User(
-            name=request.form["username_signup","value"],
-            email=request.form["email_signup","value"],
+            name=name,
+            email=email,
+            password=pwd1,
         )
         db.session.add(user)
         db.session.commit()
@@ -243,6 +244,10 @@ def sign_me_up(name, email, pwd1, pwd2, n_clicks ):
             icon=[DashIconify(icon="ic:round-celebration")],
         )
     
+
+'''
+db.session.get(name)'''
+
 
 # Callback in the future (with sqlAlchemy)
 
