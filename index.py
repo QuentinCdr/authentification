@@ -7,6 +7,7 @@ from dash.exceptions import PreventUpdate
 #from base import db,User
 from flask import Flask, request, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import select
 
 
 
@@ -165,9 +166,10 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(120), unique=False, nullable=False)
 
-
+with appFlask.app_context():
+    db.create_all()
 
 # To open & close the login modal
 @app.callback(
@@ -230,8 +232,26 @@ def sign_me_up(name, email, pwd1, pwd2, n_clicks ):
         user = User(
             name=name,
             email=email,
-            password=pwd1,
+            password=pwd1
         )
+        namecheck = db.session.execute(
+            select(User).where(User.name == name)
+        )
+        emailcheck = db.session.execute(
+            select(User).where(User.email == email)
+        )
+        print(list(namecheck))
+        if list(namecheck) !=[] or list(emailcheck) !=[]:
+            return dmc.Notification(
+                title="Error",
+                id="bad-signup-notify",
+                action="show",
+                message="This email or name already exists",
+                icon=[DashIconify(icon="feather:info", color="red", width=30)],
+            )
+
+
+
         db.session.add(user)
         db.session.commit()
         print(user)
