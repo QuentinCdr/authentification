@@ -135,6 +135,9 @@ navbar = dmc.Header(
         html.Div(
             id="signup-page"
         ),
+        html.Div(
+            id="login-page"
+        ),
         dmc.NotificationsProvider([
                 # children
             ])  
@@ -182,6 +185,26 @@ with appFlask.app_context():
 )
 def modal_demo_login(nc1, nc2, nc3, is_open):
     return not is_open
+
+#To open the login interface
+@app.callback(
+    Output("login-page","children"),
+    Input("example-name","value"),
+    Input("example-password","value"),
+    Input("modal-submit-button","n_clicks"),
+    #State("modal-simple-login", "opened"),
+    prevent_initial_call=True,
+
+)
+def sign_me_in(name, pwd, nc):
+    if name is not None and pwd is not None:
+        user = User.query.filter_by(name=name).first()
+        if user is not None and user.password == pwd:
+            return html.Div("Welcome {}".format(name))
+        else:
+            return html.Div("Wrong username or password")
+    else:
+        return html.Div("Please enter your username and password")
 
 # To open & close the signup modal
 @app.callback(
