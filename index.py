@@ -196,15 +196,45 @@ def modal_demo_login(nc1, nc2, nc3, is_open):
     prevent_initial_call=True,
 
 )
-def sign_me_in(name, pwd, nc):
+def sign_me_in(name, pwd, n_clicks):
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+    if changed_id != 'modal-submit-button.n_clicks':
+        raise PreventUpdate
     if name is not None and pwd is not None:
         user = User.query.filter_by(name=name).first()
         if user is not None and user.password == pwd:
-            return html.Div("Welcome {}".format(name))
+            return html.Div(
+                dmc.Notification(
+                    title="Welcome {} !".format(name),
+                    id="login-success",
+                    action="show",
+                    message="You are now logged in !",
+                    color="green",
+                    icon=[DashIconify(icon="akar-icons:circle-check", width=30)],
+                )
+            )
+            
+            #return html.Div("Welcome {}".format(name))
         else:
-            return html.Div("Wrong username or password")
+            return dmc.Notification(
+                title="Wrong username or password",
+                id="login-failed",
+                action="show",
+                message="Please try again",
+                color="red",
+                icon=[DashIconify(icon="akar-icons:circle-x", width=30)],
+            )
+            #return html.Div("Wrong username or password")
     else:
-        return html.Div("Please enter your username and password")
+        return dmc.Notification(
+            title="Please enter your username and password",
+            id="login-failed",
+            action="show",
+            message="Please try again",
+            color="red",
+            icon=[DashIconify(icon="akar-icons:circle-x", width=30)],
+        )
+        #return html.Div("Please enter your username and password")
 
 # To open & close the signup modal
 @app.callback(
@@ -247,7 +277,8 @@ def sign_me_up(name, email, pwd1, pwd2, n_clicks ):
             id="bad-signup-notify",
             action="show",
             message="Your first password does not match the second. Please try again",
-            icon=[DashIconify(icon="feather:info", color="red", width=30)],
+            color="red",
+            icon=[DashIconify(icon="akar-icons:circle-x", width=30)],
         )
     else:
         # enregistre dans la base
@@ -270,7 +301,8 @@ def sign_me_up(name, email, pwd1, pwd2, n_clicks ):
                 id="bad-signup-notify",
                 action="show",
                 message="This email or name already exists",
-                icon=[DashIconify(icon="feather:info", color="red", width=30)],
+                color="red",
+                icon=[DashIconify(icon="akar-icons:circle-x", width=30)],
             )
 
 
@@ -284,6 +316,7 @@ def sign_me_up(name, email, pwd1, pwd2, n_clicks ):
             id="good-signup-notify",
             action="show",
             message="You have been successfully registered",
+            color="green",
             icon=[DashIconify(icon="ic:round-celebration")],
         )
     
